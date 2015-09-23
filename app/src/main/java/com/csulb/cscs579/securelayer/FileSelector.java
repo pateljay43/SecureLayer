@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +36,7 @@ public class FileSelector extends Activity implements AdapterView.OnItemClickLis
             path.clear();
             path.add(getIntent().getStringExtra("path"));
         }
+        values = new ArrayList<>();
         // generate data for the list
         refreshList();
         // Put the data into the list
@@ -51,11 +53,7 @@ public class FileSelector extends Activity implements AdapterView.OnItemClickLis
         setTitle(this.path.get(this.path.size() - 1));
 
         // Read all files sorted into the values-array
-        if (values == null) {
-            values = new ArrayList<>();
-        } else {
-            values.clear();
-        }
+        values.clear();
         File dir = new File(this.path.get(this.path.size() - 1));
         if (!dir.canRead()) {
             setTitle(getTitle() + " (inaccessible)");
