@@ -1,8 +1,9 @@
 package com.csulb.cscs579.securelayer;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -10,32 +11,50 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     // list to store <filename, URI to file> pair
     private Map<String, String> selectedFiles;
     // store all filenames to show in ListView
-    private List values;
+    private List<String> values;
     // adapter to fill ListView element
     private ArrayAdapter<String> adapter;
+    private FloatingActionButton addFileBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        addFileBtn = (FloatingActionButton) findViewById(R.id.fab);
+        //        setSupportActionBar(toolbar);
         selectedFiles = new TreeMap<>();
+        values = new ArrayList<>();
+        refreshList();
         ListView listView = (ListView) findViewById(R.id.selectedFilesList);
         adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1,
-                selectedFiles.keySet().toArray(new String[selectedFiles.size()]));
+                values);
         listView.setAdapter(adapter);
+    }
+
+    /**
+     * refresh the list of selected files
+     */
+    private void refreshList() {
+        if (selectedFiles.size() <= 0) {
+            return;
+        }
+        String[] filenames = selectedFiles.keySet().toArray(new String[selectedFiles.size()]);
+        values.clear();
+        Collections.addAll(values, filenames);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -47,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * perform action for the enlisted files (upload or clear the list of files)
+     *
      * @param item selected option from option menu
      */
     @Override
@@ -60,10 +80,10 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_upload) {
             // send files in selectedFiles
             return true;
-        }else if(id==R.id.action_clear){
-            this.selectedFiles.clear();
-            // notify the list to be regenerated
-            this.adapter.notifyDataSetChanged();
+        } else if (id == R.id.action_clear) {
+            selectedFiles.clear();
+            // refresh list of selected files
+            refreshList();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -74,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * called when user press '+' button on main activity
      * opens new activity (FileSelector) to select files to be uploaded
+     *
      * @param view Button element which called this method
      */
     public void filePicker(View view) {
@@ -86,13 +107,13 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == PICK_FILE_REQUEST) {
             if (resultCode == RESULT_OK) {
                 String[] result = data.getStringArrayExtra("result");
-                this.selectedFiles.put(result[0], result[1]);
-                Log.e("selected files count", "" + this.selectedFiles.size());
+                selectedFiles.put(result[0], result[1]);
+                refreshList();
+                Log.e("selected files count", "" + selectedFiles.size());
                 // notify the list to be regenerated
-                this.adapter.notifyDataSetChanged();
             }
             if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(MainActivity.this, "Canceled", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "Canceled", Toast.LENGTH_SHORT).show();
             }
         }
     }
