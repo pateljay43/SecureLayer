@@ -2,7 +2,6 @@ package com.csulb.cscs579.securelayer;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
@@ -12,22 +11,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 public class MainActivity extends Activity {
+    // unique request-response identifier between activities
+    private static final int PICK_FILE_REQUEST = 1;
     // list to store <filename, URI to file> pair
     private Map<String, String> selectedFiles;
     // store all filenames to show in ListView
@@ -99,9 +92,6 @@ public class MainActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    // unique request-response identifier between activities
-    private static final int PICK_FILE_REQUEST = 1;
 
     /**
      * called when user press '+' button on main activity
