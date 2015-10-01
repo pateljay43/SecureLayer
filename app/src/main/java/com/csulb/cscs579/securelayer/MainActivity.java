@@ -2,20 +2,29 @@ package com.csulb.cscs579.securelayer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class MainActivity extends Activity {
@@ -48,13 +57,16 @@ public class MainActivity extends Activity {
      * refresh the list of selected files
      */
     private void refreshList() {
-        if (selectedFiles.size() <= 0) {
-            return;
-        }
         String[] filenames = selectedFiles.keySet().toArray(new String[selectedFiles.size()]);
         values.clear();
         Collections.addAll(values, filenames);
-        adapter.notifyDataSetChanged();
+        if (adapter == null) {
+            adapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_list_item_1, android.R.id.text1,
+                    values);
+        } else {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
