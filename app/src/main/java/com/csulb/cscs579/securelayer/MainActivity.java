@@ -6,9 +6,9 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class MainActivity extends Activity {
+    // unique request-response identifier between activities
+    private static final int PICK_FILE_REQUEST = 1;
     // list to store <filename, URI to file> pair
     private Map<String, String> selectedFiles;
     // store all filenames to show in ListView
@@ -48,13 +50,16 @@ public class MainActivity extends Activity {
      * refresh the list of selected files
      */
     private void refreshList() {
-        if (selectedFiles.size() <= 0) {
-            return;
-        }
         String[] filenames = selectedFiles.keySet().toArray(new String[selectedFiles.size()]);
         values.clear();
         Collections.addAll(values, filenames);
-        adapter.notifyDataSetChanged();
+        if (adapter == null) {
+            adapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_list_item_1, android.R.id.text1,
+                    values);
+        } else {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -87,9 +92,6 @@ public class MainActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    // unique request-response identifier between activities
-    private static final int PICK_FILE_REQUEST = 1;
 
     /**
      * called when user press '+' button on main activity
