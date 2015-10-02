@@ -30,7 +30,7 @@ Suppose ui wants to share the file f with uj. The application on ui’s mobile d
 
 Details of Implementation:
 --------------------------
-We will use Android Mobile Device as our application platform and mongo dB for storing all of the user’s data, except files, and Java WebSocket for processing data on secure server. Google drive API to store and retrieve files for each user. Application implementation will be done in Java language using Android Studio IDE. We will use Oracle Java Development Kit (JDK) 8. Last is github for source control.
+We will use Android Mobile Device as our application platform and mongo dB for storing all of the user’s data, except files, and Java WebSocket for sending/receiving data between device and secure server. Google drive API to store and retrieve files for each user. Application implementation will be done in Java language using Android Studio IDE. We will use Oracle Java Development Kit (JDK) 8. Last is github for source control.
 
 Timeline and Work Distribution:
 -------------------------------
