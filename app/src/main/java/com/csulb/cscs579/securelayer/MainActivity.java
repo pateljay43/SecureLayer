@@ -3,6 +3,7 @@ package com.csulb.cscs579.securelayer;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -12,6 +13,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.java_websocket.*;
+import org.java_websocket.client.WebSocketClient;
+
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -84,6 +89,11 @@ public class MainActivity extends Activity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_upload) {
             // send files in selectedFiles
+            try {
+
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
             return true;
         } else if (id == R.id.action_clear) {
             selectedFiles.clear();
