@@ -32,15 +32,17 @@ Details of Implementation:
 --------------------------
 We will use Android Mobile Device as our application platform and mongo dB for storing all of the user’s data, except files, and Java WebSocket for sending/receiving data between device and secure server. Google drive API to store and retrieve files for each user. Application implementation will be done in Java language using Android Studio IDE. We will use Oracle Java Development Kit (JDK) 8. Last is github for source control.
 
+
 Timeline and Work Distribution:
 -------------------------------
-> - Creating the UI for the application for enlisting files (1 week, Jay and Metehan)
-> - Establish a secure server (1 week, Jay)
-> - Test the correctness of the encryption algorithms to be used in the application (1 week, Metehan)
-> - Mongo DB Structures for storing the checksums, keyfiles, user account info (1 weeks, Jay and Metehan)
-> - Implement Encryption algorithms (1 week, Jay and Metehan)
-> - Sign up and Log in procedure (1 week, Jay and Metehan)
-> - Uploading files to the Google drive (1 week, Jay and Metehan)
-> - Downloading files from the cloud server (1 week, Jay and Metehan)
-> - Sharing the files (2 weeks, Jay and Metehan)
-> - Testing (1 week, Jay and Metehan) 
+> - Creating the UI for the application for enlisting files (9/30/16, Jay and Metehan)
+> - Establish a server to manage all devices (10/7/16, Jay and Metehan)
+> - Test the correctness of the encryption algorithms to be used in the application (10/14/16, Metehan)
+> - Configure server for security issues (10/14/16, Jay)
+> - Mongo DB Structures for storing the checksums, keyfiles, user account info (10/21/16, Jay)
+> - Uploading files to the Google drive (10/21/16, Metehan)
+> - Implement Encryption algorithms (10/28/16, Jay and Metehan)
+> - Sign up and Log in procedure (10/28/16, Jay)
+> - Downloading files from the Google drive (11/4/16, Metehan)
+> - Sharing the files (11/18/16, Jay)
+> - Testing and fixing bugs if found (11/25/16, Jay and Metehan) 
