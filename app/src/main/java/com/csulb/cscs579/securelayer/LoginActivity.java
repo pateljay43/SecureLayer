@@ -279,9 +279,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void loginSuccess() {
-        Intent intent = new Intent(this, UploadFileActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra("key", mPasswordView.getText().toString());
         startActivity(intent);
-//        showProgress(false);
         finish();
     }
 
@@ -335,8 +335,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-
-
             if (success) {
                 loginSuccess();
             } else {

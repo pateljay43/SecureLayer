@@ -172,7 +172,6 @@ public class UploadFileActivity extends Activity {
             Log.e(TAG, "RSA decryption error");
         }
         Log.e("Decoded Text", new String(decodedBytes));
-
     }
 
     @Override
@@ -245,5 +244,4 @@ public class UploadFileActivity extends Activity {
         };
         mWebSocketClient.connect();
     }
-
 }
