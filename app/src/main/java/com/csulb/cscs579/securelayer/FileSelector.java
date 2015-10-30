@@ -30,9 +30,11 @@ public class FileSelector extends Activity implements AdapterView.OnItemClickLis
         setContentView(R.layout.activity_file_selector);
         ListView listView = (ListView) findViewById(R.id.list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Select File");
+
         // Use the current directory as title
         path = new ArrayList<>();
-        path.add("/sdcard");
+        path.add("/");
         if (getIntent().hasExtra("path")) {
             path.clear();
             path.add(getIntent().getStringExtra("path"));
@@ -77,33 +79,33 @@ public class FileSelector extends Activity implements AdapterView.OnItemClickLis
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String filename = values.get(position);
+        String fileURI = values.get(position);  // currently just name of the file.extension
         if (this.path.get(this.path.size() - 1).endsWith(File.separator)) {
-            filename = this.path.get(this.path.size() - 1) + filename;
+            fileURI = this.path.get(this.path.size() - 1) + fileURI;
         } else {
-            filename = this.path.get(this.path.size() - 1) + File.separator + filename;
+            fileURI = this.path.get(this.path.size() - 1) + File.separator + fileURI;
         }
-        if (new File(filename).isDirectory()) {
-//            Toast.makeText(this, filename + " is a directory", Toast.LENGTH_LONG).show();
-            this.path.add(filename);
+        if (new File(fileURI).isDirectory()) {
+//            Toast.makeText(this, fileURI + " is a directory", Toast.LENGTH_LONG).show();
+            this.path.add(fileURI);
             refreshList();
             // notify the list to be regenerated
             ((ArrayAdapter) parent.getAdapter()).notifyDataSetChanged();
         } else {
-//            Toast.makeText(this, filename + " is not a directory", Toast.LENGTH_LONG).show();
+//            Toast.makeText(this, fileURI + " is not a directory", Toast.LENGTH_LONG).show();
             Intent returnIntent = new Intent();
-            returnIntent.putExtra("result", new String[]{values.get(position), filename});
+            returnIntent.putExtra("result", new String[]{values.get(position), fileURI});
             setResult(RESULT_OK, returnIntent);
             finish();
         }
     }
 
     /**
-     * return to previous directory or return to main activity if current directory is /sdcard
+     * return to previous directory or return to main activity if current directory is /sdard
      */
     @Override
     public void onBackPressed() {
-        if (this.path.get(this.path.size() - 1).equalsIgnoreCase("/sdcard")) {
+        if (this.path.get(this.path.size() - 1).equalsIgnoreCase("/")) {
             finish();
         } else {
             this.path.remove(this.path.size() - 1);
