@@ -2,7 +2,6 @@ package com.csulb.cscs579.securelayer;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,29 +20,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.drafts.Draft_17;
-import org.java_websocket.handshake.ServerHandshake;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
+//import org.java_websocket.drafts.Draft_17;
 
 public class HomeActivity extends AppCompatActivity {
     static final String TAG = "AsymmetricAlgorithmRSA";
@@ -65,7 +49,6 @@ public class HomeActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private WebSocketClient mWebSocketClient;
     private SharedPreferences sp;
 //    private static FloatingActionButton fab;
 
@@ -74,53 +57,14 @@ public class HomeActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    public static byte[] generateKey(String password) throws Exception {
-        byte[] keyStart = password.getBytes("UTF-8");
-
-        KeyGenerator kgen = KeyGenerator.getInstance("AES");
-        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG", "Crypto");
-        sr.setSeed(keyStart);
-        kgen.init(128, sr);
-        SecretKey skey = kgen.generateKey();
-        return skey.getEncoded();
-    }
-
-    public static byte[] encodeFile(byte[] key, byte[] fileData) throws Exception {
-
-        SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-
-        byte[] encrypted = cipher.doFinal(fileData);
-
-        return encrypted;
-    }
-
-    public static byte[] decodeFile(byte[] key, byte[] fileData) throws Exception {
-        SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-
-        byte[] decrypted = cipher.doFinal(fileData);
-
-        return decrypted;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-//        if (getIntent().hasExtra("key")) {
-//            String symmkey = getIntent().getStringExtra("key");
-//
-//            path.clear();
-//            path.add(getIntent().getStringExtra("path"));
-//        }
-        Log.e("title:;::::::::::", "" + toolbar.getTitle());
         connectionStatus = false;
-//        connectWebSocket();
+        connectWebSocket();
         selectedFiles = new TreeMap<>();
         values = new ArrayList<>();
         refreshList();
@@ -132,6 +76,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
+        // change title in action bar based on the currently displayed page
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -170,18 +115,18 @@ public class HomeActivity extends AppCompatActivity {
             pickFile();
         } else if (id == R.id.action_upload) {
             // send files in selectedFiles
-//            if (connectionStatus) {
-            // generated fresh fileKey for each file
-            // upload the selectedFiles to google drive
-            // send Enc(fileKey) to server
-            try {
-                sendFiles();
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            if (connectionStatus) {     // checks if application is still connected to Secure Server
+                // generated fresh fileKey for each file
+                // upload the selectedFiles to google drive
+                // send Enc(fileKey) to server
+                try {
+                    sendFiles();
+                } catch (Exception ex) {
+                    Log.e("Exception", ex.getMessage());
+                }
+            } else {
+                Toast.makeText(HomeActivity.this, "Not connected to Secure Server", Toast.LENGTH_SHORT).show();
             }
-//            } else {
-//                Toast.makeText(HomeActivity.this, "Not connected to Secure Server", Toast.LENGTH_SHORT).show();
-//            }
             return true;
         } else if (id == R.id.action_clear) {
             selectedFiles.clear();
@@ -191,59 +136,47 @@ public class HomeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Start another activity which allows to pick any file
+     */
     public void pickFile() {
         Intent pickFileIntent = new Intent(this, FileSelector.class);
         startActivityForResult(pickFileIntent, PICK_FILE_REQUEST);
     }
 
+    /**
+     * Tries to send the selected files for upload
+     */
     public void sendFiles() throws Exception {
-        // Original text
-//        String theTestText = "This is just a simple test!";
-        if (!selectedFiles.isEmpty()) {
-            FileInputStream fileInputStream = null;
-            Iterator<String> it = selectedFiles.keySet().iterator();
-            File file = null;
-            while (it.hasNext()) {
-                file = new File(selectedFiles.get(it.next()));
-            }
-
-            byte[] bFile = new byte[(int) file.length()];
-
-            //convert file into array of bytes
-            fileInputStream = new FileInputStream(file);
-            fileInputStream.read(bFile);
-            fileInputStream.close();
-//            Log.e("File Bytes", "" + new String(bFile));
-
-            try {
-                KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-                kpg.initialize(1024);
-                KeyPair kp = kpg.genKeyPair();
-                publicKey = kp.getPublic();
-                privateKey = kp.getPrivate();
-            } catch (Exception e) {
-                Log.e(TAG, "RSA key pair error");
-            }
-
-//            // Encode the original data with RSA private key
-//            byte[] encodedBytes = null;
-//            try {
-//                Cipher c = Cipher.getInstance("RSA");
-//                c.init(Cipher.ENCRYPT_MODE, publicKey);
-//                encodedBytes = c.doFinal(theTestText.getBytes());
-//            } catch (Exception e) {
-//                Log.e(TAG, "RSA encryption error");
-//            }
-            byte[] yourKey = generateKey("password");
-            byte[] cipherText = encodeFile(yourKey, bFile);
-            Log.e("Cipher Text", new String(cipherText));
-
-            byte[] decodedData = decodeFile(yourKey, cipherText);
-            Log.e("Plain Text", new String(decodedData));
+        if (!selectedFiles.isEmpty()) {     // check if there are any seleted files to be sent
+            // Ciphers and Hashes which will deal with file's encryption and checksum
         } else {
             Toast.makeText(HomeActivity.this, "Please select files to be uploaded!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    /**
+     * Method to handle encryption of the fileData using the key
+     *
+     * @param key      symmetric key for encrypting file
+     * @param fileData file to be encrypted
+     * @return encrypted file (cipher text)
+     */
+    public static byte[] encodeFile(byte[] key, byte[] fileData) throws Exception {
+        return null;
+    }
+
+    /**
+     * Method to handle decrypting of the fileData using the key
+     *
+     * @param key      symmetric key for decrypting file
+     * @param fileData file to be decrypted
+     * @return decrypted file (plain text)
+     */
+    public static byte[] decodeFile(byte[] key, byte[] fileData) throws Exception {
+        return null;
+    }
+
 
     /**
      * refresh the list of selected files
@@ -261,6 +194,12 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * When a user has selected a file from FileSelector it returns pair of filename and path to that file
+     * That details is returned in data
+     *
+     * @param data data returned by another activity which was started for Result
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PICK_FILE_REQUEST) {
@@ -284,53 +223,11 @@ public class HomeActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    /**
+     * Tries to connect with Secure Server through secure web socket
+     */
     private void connectWebSocket() {
-        URI uri;
-        try {
-            uri = new URI("ws://http://localhost:8080/SecureServer/actions");
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return;
-        }
-        Log.e("Websocket", "init");
-        mWebSocketClient = new WebSocketClient(uri, new Draft_17()) {
-            @Override
-            public void onOpen(ServerHandshake serverHandshake) {
-                Log.e("Websocket", "Opened");
-                Log.e("Connection established", ":::::::::::::::::::::::::::::::::::::::::::::");
-                mWebSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
-                connectionStatus = true;
-            }
-
-            @Override
-            public void onMessage(String s) {
-                final String message = s;
-                SharedPreferences sp = getSharedPreferences("syek", MODE_PRIVATE);
-                sp.edit().putString("serverPubK", message).commit();
-                Log.e("From SP", sp.getString("serverPubK", null));
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-//                        TextView textView = (TextView) findViewById(R.id.messages);
-//                        textView.setText(textView.getText() + "\n" + message);
-                    }
-                });
-            }
-
-            @Override
-            public void onClose(int i, String s, boolean b) {
-                Log.e("Closing", ":::::::::::::::::::::::::::::::::::::::::::::");
-                Log.e("Websocket", "Closed " + s);
-                connectionStatus = false;
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Log.i("Websocket", "Error " + e.getMessage());
-            }
-        };
-        Log.e("Websocket", "connecting");
-        mWebSocketClient.connect();
+        // still working on connection issues
     }
 
     /**
@@ -401,13 +298,13 @@ public class HomeActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show total 2 pages.
             return 2;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
+            switch (position) {     // names of the fragments
                 case 0:
                     return "Google Drive";
                 case 1:
