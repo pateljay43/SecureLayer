@@ -9,7 +9,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+<<<<<<< HEAD
 import android.util.Log;
+=======
+>>>>>>> Developing
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,11 +22,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+<<<<<<< HEAD
+=======
+import org.java_websocket.drafts.Draft_17;
+
+>>>>>>> Developing
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
+<<<<<<< HEAD
 //import org.java_websocket.drafts.Draft_17;
+=======
+>>>>>>> Developing
 
 /**
  * A login screen that offers login via email/password.
@@ -46,14 +57,34 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+<<<<<<< HEAD
+=======
+    private MyWebSocket webSocket;
+    private MyKeyStore myKeyStore;
+>>>>>>> Developing
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+<<<<<<< HEAD
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
 //        populateAutoComplete();
+=======
+        try {
+            myKeyStore = new MyKeyStore(getSharedPreferences("SecureLayer", MODE_PRIVATE));
+            webSocket = MyWebSocket.getInstance(
+                    new URI("wss://10.39.71.252:8080/SecureServer/actions"),
+                    new Draft_17(), null, 0,
+                    myKeyStore);
+            webSocket.connect("jay@yahoo.com", myKeyStore.hashPassword("12345678"), true);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        // Set up the login form.
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+>>>>>>> Developing
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -79,11 +110,15 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+<<<<<<< HEAD
         try {
             uri = new URI("wss://www.jaypatel.site/SecureServer/actions");
         } catch (URISyntaxException e) {
             Log.e("Exception", e.getMessage());
         }
+=======
+
+>>>>>>> Developing
     }
 
     /**
@@ -92,6 +127,10 @@ public class LoginActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+<<<<<<< HEAD
+=======
+
+>>>>>>> Developing
         if (mAuthTask != null) {
             mAuthTask = null;
         }
@@ -134,7 +173,11 @@ public class LoginActivity extends AppCompatActivity {
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
+<<<<<<< HEAD
             mAuthTask.execute((Void) null);
+=======
+            mAuthTask.execute();
+>>>>>>> Developing
         }
     }
 
@@ -143,8 +186,13 @@ public class LoginActivity extends AppCompatActivity {
      * @return true - if the text entered is a type of any email address, else false
      */
     private boolean isEmailValid(String email) {
+<<<<<<< HEAD
         return Pattern.compile("^[_A-Za-z0-9-\\\\+]+(\\\\.[_A-Za-z0-9-]+)*\n" +
                 "      @[A-Za-z0-9-]+(\\\\.[A-Za-z0-9]+)*(\\\\.[A-Za-z]{2,})$;").matcher(email).matches();
+=======
+        return Pattern.compile("\\A[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[A-Z0-9-]+\\.)+[A-Z]{2,6}\\Z")
+                .matcher(email).matches();
+>>>>>>> Developing
     }
 
     /**
@@ -217,10 +265,17 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
+<<<<<<< HEAD
             // First process mEmail and mPassowrd on mobile for checking some default validations
             // using isEmailValid and isPasswordValid.
             // Then send them to server for verifying user credentials with database
             // return ture if server accepts login details or else false
+=======
+            // Send email and pass to server for verifying user credentials with database
+            // return true if server accepts login details or else false
+//            myKeyStore.generatePassword(mPassword);
+
+>>>>>>> Developing
             return false;
         }
 

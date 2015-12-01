@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.csulb.cscs579.securelayer"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -17,7 +17,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+<<<<<<< HEAD
     packagingOptions{
+=======
+    packagingOptions {
+>>>>>>> Developing
         exclude 'META-INF/ASL2.0'
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
