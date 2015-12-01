@@ -148,11 +148,7 @@ public class HomeActivity extends AppCompatActivity {
      * Tries to send the selected files for upload
      */
     public void sendFiles() throws Exception {
-<<<<<<< HEAD
         if (!selectedFiles.isEmpty()) {     // check if there are any seleted files to be sent
-=======
-        if (!selectedFiles.isEmpty()) {     // check if there are any selected files to be sent
->>>>>>> Developing
             // Ciphers and Hashes which will deal with file's encryption and checksum
         } else {
             Toast.makeText(HomeActivity.this, "Please select files to be uploaded!", Toast.LENGTH_SHORT).show();
