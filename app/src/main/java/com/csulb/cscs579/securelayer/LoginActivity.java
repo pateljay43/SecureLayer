@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,11 +18,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.java_websocket.drafts.Draft_17;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
-//import org.java_websocket.drafts.Draft_17;
 
 /**
  * A login screen that offers login via email/password.
@@ -46,14 +46,25 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private MyWebSocket webSocket;
+    private MyKeyStore myKeyStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        try {
+            myKeyStore = new MyKeyStore(getSharedPreferences("SecureLayer", MODE_PRIVATE));
+            webSocket = MyWebSocket.getInstance(
+                    new URI("wss://10.39.71.252:8080/SecureServer/actions"),
+                    new Draft_17(), null, 0,
+                    myKeyStore);
+            webSocket.connect("jay@yahoo.com", myKeyStore.hashPassword("12345678"), true);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-//        populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -79,11 +90,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-        try {
-            uri = new URI("wss://www.jaypatel.site/SecureServer/actions");
-        } catch (URISyntaxException e) {
-            Log.e("Exception", e.getMessage());
-        }
+
     }
 
     /**
@@ -92,6 +99,7 @@ public class LoginActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+
         if (mAuthTask != null) {
             mAuthTask = null;
         }
@@ -134,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask.execute();
         }
     }
 
@@ -143,8 +151,8 @@ public class LoginActivity extends AppCompatActivity {
      * @return true - if the text entered is a type of any email address, else false
      */
     private boolean isEmailValid(String email) {
-        return Pattern.compile("^[_A-Za-z0-9-\\\\+]+(\\\\.[_A-Za-z0-9-]+)*\n" +
-                "      @[A-Za-z0-9-]+(\\\\.[A-Za-z0-9]+)*(\\\\.[A-Za-z]{2,})$;").matcher(email).matches();
+        return Pattern.compile("\\A[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[A-Z0-9-]+\\.)+[A-Z]{2,6}\\Z")
+                .matcher(email).matches();
     }
 
     /**
@@ -217,10 +225,10 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // First process mEmail and mPassowrd on mobile for checking some default validations
-            // using isEmailValid and isPasswordValid.
-            // Then send them to server for verifying user credentials with database
-            // return ture if server accepts login details or else false
+            // Send email and pass to server for verifying user credentials with database
+            // return true if server accepts login details or else false
+//            myKeyStore.generatePassword(mPassword);
+
             return false;
         }
 
